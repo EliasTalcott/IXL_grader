@@ -5,31 +5,12 @@
 ###
 
 import sys
-import numpy as np
 import pandas as pd
 
 
 # Select rows for grading
 def filter_scoregrid(grid, lis):
     return grid.loc[grid[grid.columns[1]].isin(lis)]
-
-
-# Calculate scores for each student
-# def calc_scores(grid, num_required):
-#     scores = {"Student": [], "Completed": [], "Pass/Fail": []}
-#     for student in grid.columns[4:]:
-#         score_list = list(grid[student])
-#         num_passed = 0
-#         for score in score_list:
-#             if type(score == float) and float(score) >= 70.0:
-#                 num_passed += 1
-#         scores["Student"].append(student)
-#         scores["Completed"].append(num_passed)
-#         if num_passed >= int(num_required):
-#             scores["Pass/Fail"].append("Pass")
-#         else:
-#             scores["Pass/Fail"].append("Fail")
-#     return scores
 
 
 # Calculate scores for each student
@@ -60,8 +41,11 @@ if __name__ == "__main__":
 
     # Filter data
     listings = sys.argv[2:-2]
-    listings.sort()
-    listings.sort(key = len)
+    listings = [elem.split(".") for elem in listings]
+    listings.sort(key = lambda x: x[1])
+    listings.sort(key = lambda x: x[0])
+    listings.sort(key = lambda x: len(x[0]))
+    listings = [".".join(elem) for elem in listings]
     filtered_scoregrid = filter_scoregrid(scoregrid, listings)
 
     # Calculate grades
