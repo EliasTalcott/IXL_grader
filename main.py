@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###
-## Call syntax: python3 main.py scoregrid.csv code_0 code_1 ... code_n num_required grades.csv
+## Call syntax: python3 main.py scoregrid.csv codes.txt grades.csv normalized_grades.csv
 ###
 
 import sys
@@ -36,22 +36,31 @@ def calc_scores(grid, lis):
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "help" or len(sys.argv) != 5:
+        print("Run syntax: ./IXL_grader.exe scoregrid.csv code_list.txt scores.csv normalized_scores.csv")
+        sys.exit(1)
+
     # Import score grid
     scoregrid = pd.read_csv(sys.argv[1])
 
     # Filter data
-    listings = sys.argv[2:-2]
+    with open(sys.argv[2], "r") as fpin:
+        listings = fpin.readlines()
+    listings = [listing.rstrip() for listing in listings]
     listings = [elem.split(".") for elem in listings]
-    listings.sort(key = lambda x: x[1])
-    listings.sort(key = lambda x: x[0])
-    listings.sort(key = lambda x: len(x[0]))
+    listings.sort(key=lambda x: x[1])
+    listings.sort(key=lambda x: x[0])
+    listings.sort(key=lambda x: len(x[0]))
     listings = [".".join(elem) for elem in listings]
+
     filtered_scoregrid = filter_scoregrid(scoregrid, listings)
 
     # Calculate grades
+    if filtered_scoregrid.shape[0] != len(listings):
+        sys.exit("Not all codes found in input file!")
     grades = calc_scores(filtered_scoregrid, listings)
-    grades = pd.DataFrame.from_dict(data = grades)
+    grades = pd.DataFrame.from_dict(data=grades)
 
     # Export grades to CSV output file
-    filtered_scoregrid.to_csv(sys.argv[-2], index = False)
-    grades.to_csv(sys.argv[-1], index = False)
+    filtered_scoregrid.to_csv(sys.argv[3], index=False)
+    grades.to_csv(sys.argv[4], index=False)
