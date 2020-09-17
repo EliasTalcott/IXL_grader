@@ -7,6 +7,8 @@
 import sys
 import pandas as pd
 
+MAX_SCORE = 100
+NORMALIZED_TOTAL = 10
 
 # Select rows for grading
 def filter_scoregrid(grid, lis):
@@ -28,7 +30,7 @@ def calc_scores(grid, lis):
                 if score // 70 == 1:
                     scores[lis[i]].append(3)
                 else:
-                    scores[lis[i]].append(round(score / 70 * 3, 1))
+                    scores[lis[i]].append(round(score / MAX_SCORE * NORMALIZED_TOTAL, 1))
             else:
                 scores[lis[i]].append(0)
         scores["Student"].append(student)
